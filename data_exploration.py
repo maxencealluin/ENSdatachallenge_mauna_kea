@@ -21,8 +21,13 @@ def plot_classes(data, col):
 
 def load_images(path):
 	dataset =[]
+	i = 0
 	for file in glob.glob(path):
 		dataset.append(Image.open(file))
+		i += 1
+		if i > 100:
+			break;
+	print(dataset[0].size)
 	return (dataset)
 
 def plot_sample(data):
@@ -35,8 +40,8 @@ def plot_sample(data):
 		ax.axis("off")
 	plt.show()
 
-X_test = load_images("/Users/malluin/goinfre/testset/**/**")
-# plot_sample(X_test)
+X_test = load_images("/Users/malluin/goinfre/test/**/**")
+plot_sample(X_test)
 
-Y_train = pd.read_csv("/Users/malluin/goinfre/train_y.csv")
+# Y_train = pd.read_csv("/Users/malluin/goinfre/train_y.csv")
 # plot_classes(Y_train, 'class_number')

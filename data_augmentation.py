@@ -51,6 +51,7 @@ train_gen = ImageDataGenerator(
 			preprocessing_function = imgaug)
 
 train_gen.fit(test)
+
 for batch in train_gen.flow(test):
 	print(batch.shape)
 	plot_image_np(batch)

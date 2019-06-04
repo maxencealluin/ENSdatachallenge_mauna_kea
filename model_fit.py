@@ -7,7 +7,7 @@ import glob
 import matplotlib.pyplot as plt
 import imgaug.augmenters as iaa
 
-from data_augmentation.py import load_images_np
+#preparing data_augmentation generator
 
 seq = iaa.SomeOf((0,2), [iaa.GaussianBlur(sigma = (0,5)), iaa.AdditiveGaussianNoise(scale = (0,15))])
 def imgaug(image):
@@ -26,25 +26,106 @@ train_gen = ImageDataGenerator(
 
 test_gen = ImageDataGenerator()
 
-training_generator = train_gen.flow_from_dataframe(
-				"/Users/malluin/goinfre/train/",
-				batch_size = 64,
-				class_mode = 'categorical')
+#loading data
 
-valid_generator = test_gen.flow_from_dataframe(
-				"/Users/malluin/goinfre/valid/",
-				batch_size = 64,
-				class_mode = 'categorical')
+# from load_data import load_to_dataframe
 
-test_generator = test_gen.flow_from_dataframe(
-				"/Users/malluin/goinfre/test/",
-				batch_size = 64,
-				class_mode = None)
+# df_train = load_to_dataframe("/Users/malluin/goinfre/train_y.csv", "/Users/malluin/goinfre/train")
+
+# train/valid/test generators
+
+# training_generator = train_gen.flow_from_dataframe(
+# 				df_train,
+# 				directory = '/Users/malluin/goinfre/train/',
+# 				x_col = 'image_filename',
+# 				y_col = 'class_number',
+# 				target_size = (520,520),
+# 				color_mode = 'grayscale',
+# 				batch_size = 64,
+# 				class_mode = 'categorical')
+
+# valid_generator = test_gen.flow_from_dataframe(
+# 				df_train,
+# 				directory = '/Users/malluin/goinfre/train/',
+# 				x_col = 'image_filename',
+# 				y_col = 'class_number',
+# 				target_size = (520,520),
+# 				color_mode = 'grayscale',
+# 				batch_size = 64,
+# 				class_mode = 'categorical')
+
+# test_generator = test_gen.flow_from_dataframe(
+# 				"/Users/malluin/goinfre/test/",
+# 				batch_size = 64,
+# 				class_mode = None)
+
+#mockup of model
+
+from keras.models import Sequential
+from keras.layers import Dense, MaxPooling2D, Conv2D, Flatten, ZeroPadding2D, Dropout
+
+# model = Sequential()
+# model.add(Conv2D(filters = 64, kernel_size = (5,5), input_shape = (520,520,1), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 64, kernel_size = (5,5), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Conv2D(filters = 128, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 128, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Conv2D(filters = 128, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 128, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(Conv2D(filters = 256, kernel_size = (3,3), strides = 1, padding ='same', activation = 'relu'))
+# model.add(MaxPooling2D(pool_size = (2,2), strides = (2,2)))
+
+# model.add(Flatten())
+# model.add(Dense(4225, activation='relu'))
+# model.add(Dense(1024, activation='relu'))
+# model.add(Dense(4, activation='softmax'))
+
+# model.compile(optimizer = 'adam', loss='categorical_crossentropy', metrics = ['accuracy'])
 
 
-##model
+# transfer learning vgg 16
 
-model.fit_generator(train_generator,
-bath_size = 64,
-epochs = 50,
-validation_data = valid_generator)
+from keras.applications.vgg16 import VGG16
+vgg = VGG16(include_top =False, input_shape= (260,260, 3))
+
+for layer in vgg.layers:
+	layer.trainable = False
+
+model = Sequential()
+model.add(vgg)
+
+model.add(Flatten())
+model.add(Dense(4096, activation='relu'))
+model.add(Dense(1024, activation='relu'))
+model.add(Dense(4, activation='softmax'))
+
+model.summary()
+
+for layer in model.layers:
+	print(layer)
+
+# from keras.utils.vis_utils import plot_model
+# plot_model(model, to_file='model_plot.png', show_shapes=True, show_layer_names=True)
+
+
+#model training
+
+model.fit_generator(training_generator,
+					epochs = 50,
+					steps_per_epoch = 1000,
+					validation_data = valid_generator,
+					validation_steps = 200)
