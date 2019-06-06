@@ -40,7 +40,7 @@ def plot_sample(data):
 		ax.axis("off")
 	plt.show()
 
-X_test = load_images("/Users/malluin/goinfre/test/**/**")
+X_test = load_images("./mldata/train_set/*")
 plot_sample(X_test)
 
 # Y_train = pd.read_csv("/Users/malluin/goinfre/train_y.csv")
