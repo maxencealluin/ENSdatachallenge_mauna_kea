@@ -17,6 +17,10 @@ def plot_classes(data, col):
 	print(classes)
 	plt.bar(range(len(y)), y)
 	plt.xticks(range(len(x)), x)
+	test = [x / data.shape[0] for x in classes.values()]
+	for key, x in zip(classes.keys(), test):
+		print("{} {:.3f}% ".format(key, x), end ='')
+	print("\n")
 	plt.show()
 
 def load_images(path):
@@ -43,5 +47,9 @@ def plot_sample(data):
 X_test = load_images("./mldata/train_set/*")
 plot_sample(X_test)
 
-# Y_train = pd.read_csv("/Users/malluin/goinfre/train_y.csv")
+if __name__ == "__main__":
+	X_test = load_images("./mldata/train_set/*")
+	plot_sample(X_test)
 # plot_classes(Y_train, 'class_number')
+	Y_train = pd.read_csv("./mldata/train_y.csv")
+	plot_classes(Y_train, 'class_number')
