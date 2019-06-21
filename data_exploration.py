@@ -44,9 +44,6 @@ def plot_sample(data):
 		ax.axis("off")
 	plt.show()
 
-X_test = load_images("./mldata/train_set/*")
-plot_sample(X_test)
-
 if __name__ == "__main__":
 	X_test = load_images("./mldata/train_set/*")
 	plot_sample(X_test)

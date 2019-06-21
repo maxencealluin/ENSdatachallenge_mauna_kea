@@ -10,9 +10,12 @@ df_pred = pd.read_csv(argv[2])
 print(df_true.shape)
 print(df_pred.shape)
 
+res = df_pred.merge(df_true, on=['image_filename'])
+    
+print(res)
 from sklearn.metrics import confusion_matrix, accuracy_score
-matrix = confusion_matrix(df_true['class_number'], df_pred['class_number'])
-accuracy = accuracy_score(df_true['class_number'], df_pred['class_number'])
+matrix = confusion_matrix(res['class_number_x'], res['class_number_y'])
+accuracy = accuracy_score(res['class_number_x'], res['class_number_y'])
 
 print("Accuracy : {}".format(accuracy))
 import seaborn as sns
